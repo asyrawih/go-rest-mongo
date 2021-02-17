@@ -17,36 +17,36 @@ func (u UserRepositoryImpl) Insert(user entity.User) {
 	defer cancel()
 
 	_, err := u.Collection.InsertOne(ctx, bson.M{
-		"_id":      user.Id,
-		"name":     user.Name,
-		"email":    user.Email,
-		"password": user.Password,
-		"address":  user.Address,
+		"_id":          user.Id,
+		"name":         user.Name,
+		"email":        user.Email,
+		"password":     user.Password,
+		"address":      user.Address,
+		"phone_number": user.PhoneNumber,
 	})
 
 	exception.PanicIfNeeded(err)
 }
+
 // Get All User collection
 func (u UserRepositoryImpl) GetAll() (users []entity.User) {
-	ctx , cancel := config.NewMongoContext()
+	ctx, cancel := config.NewMongoContext()
 	defer cancel()
-
-	cursor , err := u.Collection.Find(ctx , bson.M{})
+	query := bson.M{}
+	cursor, err := u.Collection.Find(ctx, query)
 	exception.PanicIfNeeded(err)
 
 	var documents []bson.M
+	err = cursor.All(ctx, &documents)
 
-	err = cursor.All(ctx , &documents)
-	exception.PanicIfNeeded(err)
-
-	for _ , document := range documents {
+	for _, document := range documents {
 		users = append(users, entity.User{
 			Id:          document["_id"].(string),
 			Name:        document["name"].(string),
 			Email:       document["email"].(string),
 			Password:    document["password"].(string),
 			Address:     document["address"].(string),
-			PhoneNumber: document["phoneNumber"].(string),
+			PhoneNumber: document["phone_number"].(string),
 		})
 	}
 
@@ -55,9 +55,9 @@ func (u UserRepositoryImpl) GetAll() (users []entity.User) {
 
 func (u UserRepositoryImpl) Find(Id string) (users entity.User) {
 	filter := bson.D{{"_id", Id}}
-	ctx , cancel := config.NewMongoContext()
+	ctx, cancel := config.NewMongoContext()
 	defer cancel()
-	err := u.Collection.FindOne(ctx , filter).Decode(&users)
+	err := u.Collection.FindOne(ctx, filter).Decode(&users)
 	exception.PanicIfNeeded(err)
 	return users
 }
