@@ -11,6 +11,8 @@ type ServiceImpl struct {
 	UserRepository repository.UserRepository
 }
 
+
+
 func NewUserService(userRepository *repository.UserRepository) UserService {
 	return &ServiceImpl{
 		UserRepository: *userRepository,
@@ -43,8 +45,8 @@ func (userService ServiceImpl) Create(request model.CreateUserRequest) (response
 	return response
 }
 
-func (userService *ServiceImpl) List() (response []model.GetUserResponse) {
-	users := userService.UserRepository.GetAll()
+func (userService *ServiceImpl) List(userId  string) (response []model.GetUserResponse) {
+	users := userService.UserRepository.GetAll(userId)
 	for _, user := range users {
 		response = append(response, model.GetUserResponse{
 			Id:          user.Id,
@@ -56,4 +58,18 @@ func (userService *ServiceImpl) List() (response []model.GetUserResponse) {
 		})
 	}
 	return response
+}
+
+func (userService ServiceImpl) Find(id string) (response model.FindUserResponse) {
+	var user  = userService.UserRepository.Find(id)
+	response = model.FindUserResponse{
+		Id:          user.Id,
+		Name:        user.Name,
+		Email:       user.Email,
+		Address:     user.Address,
+		PhoneNumber: user.PhoneNumber,
+	}
+
+	return response
+
 }

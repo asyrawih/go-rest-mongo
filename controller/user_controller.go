@@ -20,6 +20,7 @@ func NewUserController(userService services.UserService) UserController {
 func (controller *UserController) Route(app *fiber.App){
 	app.Post("/api/users" , controller.Create)
 	app.Get("/api/users" ,  controller.GetAll)
+	app.Get("/api/users/:id" ,  controller.GetAll)
 }
 
 func (controller *UserController) Create(ctx *fiber.Ctx) error {
@@ -39,12 +40,11 @@ func (controller *UserController) Create(ctx *fiber.Ctx) error {
 }
 
 func (controller UserController) GetAll(ctx *fiber.Ctx) error {
-	var response = controller.UserService.List()
+	id := ctx.Params("id")
+	var response = controller.UserService.List(id)
 	return ctx.JSON(model.WebResponse{
 		Code:    200,
 		Message: "GOT",
 		Data:    &response,
 	})
 }
-
-

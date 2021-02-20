@@ -12,17 +12,16 @@ import (
 )
 
 func main()  {
-
 	// Setup Database
 	configuration := config.New()
 	database := config.NewMongoDatabase(configuration)
 
 	// Setup repository
 	userRepository := repository.NewUserRepository(database)
-
+	//For ignore variable
+	_ = repository.NewProductRepository(database)
 	// Setup Service
 	userService := service_user.NewUserService(&userRepository)
-
 	//Setup Controller
 	userController := controller.NewUserController(userService)
 

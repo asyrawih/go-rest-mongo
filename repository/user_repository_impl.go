@@ -29,10 +29,15 @@ func (u UserRepositoryImpl) Insert(user entity.User) {
 }
 
 // Get All User collection
-func (u UserRepositoryImpl) GetAll() (users []entity.User) {
+func (u UserRepositoryImpl) GetAll(userId string) (users []entity.User) {
 	ctx, cancel := config.NewMongoContext()
 	defer cancel()
 	query := bson.M{}
+
+	if userId != "" {
+		query = bson.M{"_id" : userId}
+	}
+
 	cursor, err := u.Collection.Find(ctx, query)
 	exception.PanicIfNeeded(err)
 
